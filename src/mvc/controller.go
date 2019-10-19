@@ -1,6 +1,7 @@
 package mvc
 
 import (
+	"github.com/gorilla/mux"
 	"log"
 	"math"
 	"net/http"
@@ -11,6 +12,20 @@ import (
 func loadAllSensorsData(w http.ResponseWriter, r *http.Request) {
 	response := luftDaten.getLastReading()
 	reply(response, w)
+}
+
+func getSensorById(w http.ResponseWriter, r *http.Request) {
+	response := luftDaten.getLastReading()
+	vars := mux.Vars(r)
+	requestedId, _ := strconv.ParseInt(vars["id"], 10, 64)
+	var matchedSensor Welcome
+	for _, sensor := range *response {
+		if sensor.Sensor.ID == requestedId {
+			matchedSensor = append(matchedSensor, sensor)
+			break
+		}
+	}
+	reply(&matchedSensor, w)
 }
 
 func getSensorsWithFilter(w http.ResponseWriter, r *http.Request) {

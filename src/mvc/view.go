@@ -10,6 +10,7 @@ import (
 func Entrypoint() {
 	r := mux.NewRouter()
 	r.HandleFunc("/sensors", loadAllSensorsData).Methods(http.MethodGet)
+	r.HandleFunc("/sensors/{id}", getSensorById).Methods(http.MethodGet)
 	r.HandleFunc("/sensors/filter", getSensorsWithFilter).Methods(http.MethodGet)
 	r.HandleFunc("/copernicus/image", loadCopernicusImageData).Methods(http.MethodGet)
 	//r.HandleFunc("/copernicus/data", loadCopernicusData).Methods(http.MethodGet);
