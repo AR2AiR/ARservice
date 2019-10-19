@@ -10,13 +10,14 @@ import (
 )
 
 func loadAllSensorsData(w http.ResponseWriter, r *http.Request) {
-	response := luftDaten.getLastReading()
+	vars := mux.Vars(r)
+	response := luftDaten.getLastReading(vars["time"])
 	reply(response, w)
 }
 
 func getSensorById(w http.ResponseWriter, r *http.Request) {
-	response := luftDaten.getLastReading()
 	vars := mux.Vars(r)
+	response := luftDaten.getLastReading(vars["time"])
 	requestedId, _ := strconv.ParseInt(vars["id"], 10, 64)
 	var matchedSensor Welcome
 	for _, sensor := range *response {
@@ -29,9 +30,10 @@ func getSensorById(w http.ResponseWriter, r *http.Request) {
 }
 
 func getSensorsWithFilter(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
 	param := r.URL.Query().Get("area")
 	lat, lon, dist := processAreaQueryStringParams(param)
-	response := luftDaten.getLastReading()
+	response := luftDaten.getLastReading(vars["time"])
 	var sensorsInArea Welcome
 	for _, sensor := range *response {
 		sensorLat := string2Float64(sensor.Location.Latitude)
