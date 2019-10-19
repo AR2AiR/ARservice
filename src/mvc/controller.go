@@ -8,24 +8,15 @@ import (
 	"strings"
 )
 
-type LuftDatenReading struct {
-	lastReading *Welcome
-}
-
-func (c *LuftDatenReading) updateReading() {
-	c.lastReading = queryAllSensorsData()
-}
-
-
 func loadAllSensorsData(w http.ResponseWriter, r *http.Request) {
-	response := queryAllSensorsData()
+	response := luftDaten.getLastReading()
 	reply(response, w)
 }
 
 func getSensorsWithFilter(w http.ResponseWriter, r *http.Request) {
 	param := r.URL.Query().Get("area")
 	lat, lon, dist := processAreaQueryStringParams(param)
-	response := queryAllSensorsData()
+	response := luftDaten.getLastReading()
 	var sensorsInArea Welcome
 	for _, sensor := range *response {
 		sensorLat := string2Float64(sensor.Location.Latitude)
