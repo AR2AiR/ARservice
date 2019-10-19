@@ -9,26 +9,26 @@ import (
 )
 
 func loadAllSensorsData(w http.ResponseWriter, r *http.Request) {
-	response := queryAllSensorsData()
+	response := luftDaten.getLastReading()
 	reply(response, w)
 }
 
-//func getSensorsWithFilter(w http.ResponseWriter, r *http.Request) {
-//	param := r.URL.Query().Get("area")
-//	lat, lon, dist := processAreaQueryStringParams(param)
-//	response := queryAllSensorsData()
-//	var sensorsInArea []SensorReading
-//	for _, sensor := range response {
-//		sensorLat := string2Float64(sensor.Location.Latitude)
-//		sensorLon := string2Float64(sensor.Location.Longitude)
-//		if distanceMetersBetweenTwoLocations(lat, lon, sensorLat, sensorLon) < dist {
-//			sensorsInArea = append(sensorsInArea, sensor)
-//		}
-//	}
-//	fmt.Println(lat, lon, dist)
-//	fmt.Println(response)
-	//reply(sensorsInArea, w)
-//}
+func getSensorsWithFilter(w http.ResponseWriter, r *http.Request) {
+	param := r.URL.Query().Get("area")
+	lat, lon, dist := processAreaQueryStringParams(param)
+	response := luftDaten.getLastReading()
+	var sensorsInArea Welcome
+	for _, sensor := range *response {
+		sensorLat := string2Float64(sensor.Location.Latitude)
+		sensorLon := string2Float64(sensor.Location.Longitude)
+		if distanceMetersBetweenTwoLocations(lat, lon, sensorLat, sensorLon) < dist {
+			sensorsInArea = append(sensorsInArea, sensor)
+		}
+	}
+	//fmt.Println(lat, lon, dist)
+	//fmt.Println(response)
+	reply(&sensorsInArea, w)
+}
 
 func processAreaQueryStringParams(param string) (float64, float64, float64) {
 	splitParams := strings.Split(param, ",")
