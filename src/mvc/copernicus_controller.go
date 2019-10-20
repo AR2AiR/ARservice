@@ -10,6 +10,8 @@ import (
 
 func loadCopernicusImageForecast(w http.ResponseWriter, r *http.Request) {
 
+	service := getParamString(r, "service", "ENSEMBLE-FORECAST")
+	species := getParamString(r, "species", "PM10")
 	startLatitude := getParamFloat64(r, "startLatitude", 30.05)
 	endLatitude := getParamFloat64(r, "endLatitude", -24.95)
 	startLongitude := getParamFloat64(r, "startLongitude", 71.95)
@@ -18,7 +20,7 @@ func loadCopernicusImageForecast(w http.ResponseWriter, r *http.Request) {
 	width := getParamInt(r, "width", 810)
 	height := getParamInt(r, "height", 495)
 
-	response := queryCopernicusImageData(startLatitude, endLatitude, startLongitude, endLongitude, level, width, height)
+	response := queryCopernicusImageData(service, species, startLatitude, endLatitude, startLongitude, endLongitude, level, width, height)
 	replyImageData(response, w)
 }
 
@@ -33,10 +35,10 @@ func replyImageData(imageData []byte, w http.ResponseWriter) {
 	}
 }
 
-func queryCopernicusImageData(startLatitude float64, endLatitude float64, startLongitude float64, endLongitude float64, level int64, width int64, height int64) []byte {
+func queryCopernicusImageData(service string, species string, startLatitude float64, endLatitude float64, startLongitude float64, endLongitude float64, level int64, width int64, height int64) []byte {
 
 	const apiToken = "__-Tlb4srqXM2EzZkgj_Va5OdozWR9G-dW7TS0yFsZL0I__"
-	const serviceURL = "https://geoservices.regional.atmosphere.copernicus.eu/services/CAMS50-ENSEMBLE-FORECAST-01-EUROPE-WMS";
+	serviceURL := fmt.Sprintf("https://geoservices.regional.atmosphere.copernicus.eu/services/CAMS50-%s-01-EUROPE-WMS", service)
 
 	baseURL, err := url.Parse(serviceURL)
 	if err != nil {
@@ -46,8 +48,8 @@ func queryCopernicusImageData(startLatitude float64, endLatitude float64, startL
 	params := url.Values {}
 	params.Add("service", "WMS")
 	params.Add("VERSION", "1.3.0")
-	params.Add("LAYERS", "PM10__SPECIFIC_HEIGHT_LEVEL_ABOVE_GROUND")
-	params.Add("STYLES", "PM10_USI__HEIGHT__SHADING")
+	params.Add("LAYERS", fmt.Sprintf("%s__SPECIFIC_HEIGHT_LEVEL_ABOVE_GROUND", species))
+	params.Add("STYLES", fmt.Sprintf("%s_USI__HEIGHT__SHADING", species))
 	params.Add("DIM_REFERENCE_TIME", "2019-10-17T00:00:00Z")
 	params.Add("TIME", "2019-10-17T05:00:00Z")
 	params.Add("ELEVATION", fmt.Sprintf("%d", level))
