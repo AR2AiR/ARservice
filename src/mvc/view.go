@@ -17,8 +17,7 @@ func Entrypoint() {
 	s.HandleFunc("/filter", getSensorsWithFilter).Methods(http.MethodGet)
 
 	r.HandleFunc("/copernicus/forecast/image", loadCopernicusImageForecast).Methods(http.MethodGet)
-	// r.HandleFunc("/copernicus/analysis/image", loadCopernicusImageAnalysis).Methods(http.MethodGet)
-	r.HandleFunc("/copernicus/image", loadCopernicusImageDataV1).Methods(http.MethodGet)
+	r.HandleFunc("/copernicus/analysis/image", loadCopernicusImageAnalysis).Methods(http.MethodGet)
 	//r.HandleFunc("/copernicus/data", loadCopernicusData).Methods(http.MethodGet);
 
 	go func() {
