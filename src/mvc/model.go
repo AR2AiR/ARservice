@@ -42,7 +42,8 @@ func (c *LuftDatenReading) queryAllSensorsData(uri string) *Welcome {
 	if err != nil {
 		log.Printf("Error converting response to json %s\n", err)
 	}
-	return &sensorData
+	trimedData := postProcessSensorsData(&sensorData)
+	return trimedData
 }
 
 func (c *LuftDatenReading) updateReading(tp string) {
@@ -100,6 +101,30 @@ func (c *LuftDatenReading) getLastReading(tp string) *Welcome {
 	default:
 		log.Print("Wrong type of sensor reading requested")
 	}
-
 	return data
 }
+
+func postProcessSensorsData(data *Welcome) *Welcome {
+	var trimedData Welcome
+	for _, element := range *data {
+		if sensorHasPmReading(&element) {
+			trimedData = append(trimedData, element)
+		}
+	}
+	return &trimedData
+}
+
+func sensorHasPmReading(elem *WelcomeElement) bool {
+	sensorName := elem.Sensor.SensorType.Name
+	if sensorName == Sds011 || sensorName == Sds021 || sensorName == Hpm ||
+		sensorName == Pms1003 || sensorName == Pms3003 || sensorName == Pms5003 ||
+		sensorName == Pms7003 || sensorName == Ppd42NS {
+		return true
+	}
+	return false
+}
+
+//func getHTMLpage() {
+//	file, _ := http.Get("http://archive.luftdaten.info/2019-10-18/")
+//	fmt.Print(file.Body)
+//}
