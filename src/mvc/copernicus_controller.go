@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"os"
 	"time"
 )
 
@@ -40,7 +41,7 @@ func replyImageData(imageData []byte, w http.ResponseWriter) {
 
 func queryCopernicusImageForecast(service string, species string, date int, hour int,  startLatitude float64, endLatitude float64, startLongitude float64, endLongitude float64, level int, width int, height int) []byte {
 
-	const apiToken = "__-Tlb4srqXM2EzZkgj_Va5OdozWR9G-dW7TS0yFsZL0I__"
+	apiKey := os.Getenv("COPERNICUS_API_KEY")
 	serviceURL := fmt.Sprintf("https://geoservices.regional.atmosphere.copernicus.eu/services/CAMS50-%s-01-EUROPE-WMS", service)
 
 	baseURL, err := url.Parse(serviceURL)
@@ -61,7 +62,7 @@ func queryCopernicusImageForecast(service string, species string, date int, hour
 	params.Add("TIME", fmt.Sprintf("%sT%02d:00:00Z", filterDate, hour))
 	params.Add("ELEVATION", fmt.Sprintf("%d", level))
 	params.Add("FORMAT", "image/png")
-	params.Add("TOKEN", apiToken)
+	params.Add("TOKEN", apiKey)
 	params.Add("REQUEST", "GetMap")
 	params.Add("CRS", "EPSG:4326")
 	params.Add("BBOX", fmt.Sprintf("%.2f,%.2f,%.2f,%.2f", startLatitude, endLatitude, startLongitude, endLongitude))
