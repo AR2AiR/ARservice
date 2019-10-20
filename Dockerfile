@@ -25,4 +25,5 @@ RUN go build -o main ./src/.
 EXPOSE 8000
 
 # Command to run the executable
-CMD ["./main"]
+# CMD ["./main"]
+ENTRYPOINT ["./main"]
